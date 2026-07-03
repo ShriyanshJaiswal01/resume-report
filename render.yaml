@@ -15,3 +15,5 @@ services:
         sync: false           # Render will prompt the user to input this value
       - key: JWT_SECRET
         sync: false           # Render will prompt the user to input this value
+      - key: FRONTEND_URL
+        sync: false           # Render will prompt the user to input this value
