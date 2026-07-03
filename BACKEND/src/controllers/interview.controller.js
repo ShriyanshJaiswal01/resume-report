@@ -6,29 +6,67 @@ const interviewReportModel = require("../models/interviewReport.model")
 
 
 async function generateInterViewReportController(req, res) {
+    try {
+        if (!req.file && !req.body.selfDescription) {
+            return res.status(400).json({
+                message: "Please upload a resume or provide a self-description."
+            });
+        }
 
-    const resumeContent = await (new pdfParse.PDFParse(Uint8Array.from(req.file.buffer))).getText()
-    const { selfDescription, jobDescription } = req.body
+        let resumeText = "";
+        if (req.file) {
+            try {
+                console.log("[Backend] Parsing uploaded PDF...");
+                const resumeContent = await (new pdfParse.PDFParse(Uint8Array.from(req.file.buffer))).getText();
+                resumeText = resumeContent.text || "";
+                console.log("[Backend] PDF parsed successfully.");
+            } catch (pdfErr) {
+                console.error("[Backend] Error parsing PDF:", pdfErr);
+                return res.status(400).json({
+                    message: "Failed to parse the uploaded PDF file. Please ensure it is a valid PDF.",
+                    error: pdfErr.message
+                });
+            }
+        } else {
+            console.log("[Backend] No file uploaded, using self-description.");
+            resumeText = req.body.selfDescription || "";
+        }
 
-    const interViewReportByAi = await generateInterviewReport({
-        resume: resumeContent.text,
-        selfDescription,
-        jobDescription
-    })
+        const { selfDescription, jobDescription } = req.body;
 
-    const interviewReport = await interviewReportModel.create({
-        user: req.user.id,
-        resume: resumeContent.text,
-        selfDescription,
-        jobDescription,
-        ...interViewReportByAi
-    })
+        if (!jobDescription) {
+            return res.status(400).json({
+                message: "Job description is required."
+            });
+        }
 
-    res.status(201).json({
-        message: "Interview report generated successfully.",
-        interviewReport
-    })
+        console.log("[Backend] Requesting Gemini AI analysis...");
+        const interViewReportByAi = await generateInterviewReport({
+            resume: resumeText,
+            selfDescription,
+            jobDescription
+        });
+        console.log("[Backend] Gemini AI analysis successfully retrieved.");
 
+        const interviewReport = await interviewReportModel.create({
+            user: req.user.id,
+            resume: resumeText,
+            selfDescription,
+            jobDescription,
+            ...interViewReportByAi
+        });
+
+        res.status(201).json({
+            message: "Interview report generated successfully.",
+            interviewReport
+        });
+    } catch (err) {
+        console.error("[Backend] generateInterViewReport Error:", err);
+        res.status(500).json({
+            message: "An error occurred while generating the interview report.",
+            error: err.message
+        });
+    }
 }
 
 
