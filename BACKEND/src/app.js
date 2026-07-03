@@ -50,4 +50,12 @@ const interviewRouter = require("./routes/interview.routes");
 app.use("/api/auth", authLimiter, authRouter);
 app.use("/api/interview", generalLimiter, interviewRouter);
 
+// Root Health Check Route
+app.get("/", (req, res) => {
+    res.json({
+        status: "ok",
+        message: "Resume & Interview Report Platform API is running successfully."
+    });
+});
+
 module.exports = app;
