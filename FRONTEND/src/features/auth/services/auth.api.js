@@ -10,9 +10,10 @@ export async function register({username,email,password}){
         const response = await api.post('/api/auth/register',{
             username,email,password
         })
-    return response.data
+        return response.data
     }catch(err){
         console.log(err)
+        throw err
     }
 }
 
@@ -24,6 +25,7 @@ export async function login({email,password}){
         return response.data
     }catch(err){
         console.log(err)
+        throw err
     }
 }
 
@@ -33,6 +35,7 @@ export async function logout(){
         return response.data
     }catch(err){
         console.log(err)
+        throw err
     }
 }
 
@@ -42,5 +45,54 @@ export async function getMe(){
         return response.data
     }catch(err){
         console.log(err)
+        throw err
+    }
+}
+
+export async function sendRegisterOtp({username,email,password}){
+    try{
+        const response = await api.post('/api/auth/register/send-otp',{
+            username,email,password
+        })
+        return response.data
+    }catch(err){
+        console.log(err)
+        throw err
+    }
+}
+
+export async function verifyRegisterOtp({username,email,password,otp}){
+    try{
+        const response = await api.post('/api/auth/register/verify-otp',{
+            username,email,password,otp
+        })
+        return response.data
+    }catch(err){
+        console.log(err)
+        throw err
+    }
+}
+
+export async function sendLoginOtp({email,password}){
+    try{
+        const response = await api.post('/api/auth/login/send-otp',{
+            email,password
+        })
+        return response.data
+    }catch(err){
+        console.log(err)
+        throw err
+    }
+}
+
+export async function verifyLoginOtp({email,password,otp}){
+    try{
+        const response = await api.post('/api/auth/login/verify-otp',{
+            email,password,otp
+        })
+        return response.data
+    }catch(err){
+        console.log(err)
+        throw err
     }
 }
