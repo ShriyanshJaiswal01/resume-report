@@ -1,4 +1,10 @@
 const nodemailer = require("nodemailer");
+const dns = require("dns");
+
+// Force Node to prefer IPv4 over IPv6, resolving ENETUNREACH issues on cloud hosts like Render
+if (typeof dns.setDefaultResultOrder === 'function') {
+    dns.setDefaultResultOrder('ipv4first');
+}
 
 let transporterPromise = (async () => {
     // 1. If SMTP environment variables are defined, use them.
