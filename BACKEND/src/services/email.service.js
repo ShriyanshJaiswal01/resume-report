@@ -26,9 +26,24 @@ let transporterPromise = (async () => {
     // 2. If SMTP_USER and SMTP_PASS are set, auto-configure Gmail/others based on domain
     if (process.env.SMTP_USER && process.env.SMTP_PASS) {
         const isGmail = process.env.SMTP_USER.endsWith("@gmail.com");
+        if (isGmail) {
+            return nodemailer.createTransport({
+                host: 'smtp.gmail.com',
+                port: 587,
+                secure: false, // false for 587 (STARTTLS)
+                auth: {
+                    user: process.env.SMTP_USER,
+                    pass: process.env.SMTP_PASS
+                },
+                lookup: (hostname, options, callback) => {
+                    dns.lookup(hostname, { family: 4 }, callback);
+                }
+            });
+        }
+
+        // Non-Gmail fallback
         return nodemailer.createTransport({
-            service: isGmail ? 'gmail' : undefined,
-            host: isGmail ? undefined : 'smtp.gmail.com', // fallback
+            service: 'gmail', // or let nodemailer auto-detect
             auth: {
                 user: process.env.SMTP_USER,
                 pass: process.env.SMTP_PASS
