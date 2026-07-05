@@ -16,6 +16,9 @@ let transporterPromise = (async () => {
             auth: {
                 user: process.env.SMTP_USER,
                 pass: process.env.SMTP_PASS
+            },
+            lookup: (hostname, options, callback) => {
+                dns.lookup(hostname, { family: 4 }, callback);
             }
         });
     }
@@ -29,6 +32,9 @@ let transporterPromise = (async () => {
             auth: {
                 user: process.env.SMTP_USER,
                 pass: process.env.SMTP_PASS
+            },
+            lookup: (hostname, options, callback) => {
+                dns.lookup(hostname, { family: 4 }, callback);
             }
         });
     }
@@ -46,6 +52,9 @@ let transporterPromise = (async () => {
             user: testAccount.user, // generated ethereal user
             pass: testAccount.pass, // generated ethereal password
         },
+        lookup: (hostname, options, callback) => {
+            dns.lookup(hostname, { family: 4 }, callback);
+        }
     });
 })();
 
