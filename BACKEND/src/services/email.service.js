@@ -1,6 +1,30 @@
 const nodemailer = require("nodemailer");
 const dns = require("dns");
 
+// Force IPv6 lookups to fail and fall back to IPv4 (resolving Render ENETUNREACH SMTP issues)
+dns.resolve6 = (hostname, callback) => {
+    callback(null, []);
+};
+
+if (dns.Resolver && dns.Resolver.prototype) {
+    dns.Resolver.prototype.resolve6 = function(hostname, callback) {
+        callback(null, []);
+    };
+}
+
+const originalLookup = dns.lookup;
+dns.lookup = function(hostname, options, callback) {
+    if (typeof options === 'function') {
+        callback = options;
+        options = { family: 4 };
+    } else if (options && typeof options === 'object') {
+        options.family = 4;
+    } else if (typeof options === 'number') {
+        options = 4;
+    }
+    return originalLookup.call(dns, hostname, options, callback);
+};
+
 // Force Node to prefer IPv4 over IPv6, resolving ENETUNREACH issues on cloud hosts like Render
 if (typeof dns.setDefaultResultOrder === 'function') {
     dns.setDefaultResultOrder('ipv4first');
