@@ -13,12 +13,10 @@ let transporterPromise = (async () => {
             host: process.env.SMTP_HOST,
             port: parseInt(process.env.SMTP_PORT || "587"),
             secure: process.env.SMTP_SECURE === "true",
+            family: 4, // Force IPv4
             auth: {
                 user: process.env.SMTP_USER,
                 pass: process.env.SMTP_PASS
-            },
-            lookup: (hostname, options, callback) => {
-                dns.lookup(hostname, { family: 4 }, callback);
             }
         });
     }
@@ -31,12 +29,10 @@ let transporterPromise = (async () => {
                 host: 'smtp.gmail.com',
                 port: 587,
                 secure: false, // false for 587 (STARTTLS)
+                family: 4, // Force IPv4
                 auth: {
                     user: process.env.SMTP_USER,
                     pass: process.env.SMTP_PASS
-                },
-                lookup: (hostname, options, callback) => {
-                    dns.lookup(hostname, { family: 4 }, callback);
                 }
             });
         }
@@ -44,12 +40,10 @@ let transporterPromise = (async () => {
         // Non-Gmail fallback
         return nodemailer.createTransport({
             service: 'gmail', // or let nodemailer auto-detect
+            family: 4, // Force IPv4
             auth: {
                 user: process.env.SMTP_USER,
                 pass: process.env.SMTP_PASS
-            },
-            lookup: (hostname, options, callback) => {
-                dns.lookup(hostname, { family: 4 }, callback);
             }
         });
     }
@@ -63,12 +57,10 @@ let transporterPromise = (async () => {
         host: "smtp.ethereal.email",
         port: 587,
         secure: false, // true for 465, false for other ports
+        family: 4, // Force IPv4
         auth: {
             user: testAccount.user, // generated ethereal user
             pass: testAccount.pass, // generated ethereal password
-        },
-        lookup: (hostname, options, callback) => {
-            dns.lookup(hostname, { family: 4 }, callback);
         }
     });
 })();
