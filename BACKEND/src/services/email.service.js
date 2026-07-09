@@ -123,7 +123,7 @@ async function sendOtpEmail(toEmail, otp) {
         try {
             console.log(`[Email Service] Attempting to send OTP via Resend HTTPS to: ${toEmail}`);
             const { data, error } = await resendInstance.emails.send({
-                from: 'AI Interview Strategist <onboarding@resend.dev>',
+                from: process.env.RESEND_FROM_EMAIL || 'AI Interview Strategist <onboarding@resend.dev>',
                 to: toEmail,
                 subject: 'Your Email Verification OTP Code',
                 html: htmlContent

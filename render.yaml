@@ -20,4 +20,8 @@ services:
       - key: SMTP_USER
         sync: false
       - key: SMTP_PASS
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM_EMAIL
         sync: false           # Render will prompt the user to input this value
