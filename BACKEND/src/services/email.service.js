@@ -122,14 +122,17 @@ async function sendOtpEmail(toEmail, otp) {
     if (resendInstance) {
         try {
             console.log(`[Email Service] Attempting to send OTP via Resend HTTPS to: ${toEmail}`);
-            const data = await resendInstance.emails.send({
+            const { data, error } = await resendInstance.emails.send({
                 from: 'AI Interview Strategist <onboarding@resend.dev>',
                 to: toEmail,
                 subject: 'Your Email Verification OTP Code',
                 html: htmlContent
             });
-            console.log(`[Email Service] Resend email sent successfully. ID: ${data.id}`);
-            return { success: true, messageId: data.id, otp };
+            if (error) {
+                throw new Error(error.message || JSON.stringify(error));
+            }
+            console.log(`[Email Service] Resend email sent successfully. ID: ${data?.id}`);
+            return { success: true, messageId: data?.id, otp };
         } catch (error) {
             console.error("[Email Service] Resend HTTPS delivery failed:", error);
             console.log("[Email Service] Attempting fallback to SMTP...");
