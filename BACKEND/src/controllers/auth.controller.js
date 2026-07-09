@@ -142,7 +142,7 @@ async function registerSendOtpController(req, res) {
     await otpModel.findOneAndUpdate(
         { email },
         { otp, createdAt: new Date() },
-        { upsert: true, new: true }
+        { upsert: true, returnDocument: 'after' }
     );
 
     // Send email
@@ -244,7 +244,7 @@ async function loginSendOtpController(req, res) {
     await otpModel.findOneAndUpdate(
         { email },
         { otp, createdAt: new Date() },
-        { upsert: true, new: true }
+        { upsert: true, returnDocument: 'after' }
     );
 
     // Send email

@@ -16,4 +16,8 @@ services:
       - key: JWT_SECRET
         sync: false           # Render will prompt the user to input this value
       - key: FRONTEND_URL
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
         sync: false           # Render will prompt the user to input this value
