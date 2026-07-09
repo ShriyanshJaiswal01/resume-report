@@ -118,7 +118,41 @@ async function sendOtpEmail(toEmail, otp) {
         </div>
     `;
 
-    // 1. Try sending via Resend HTTPS API if key is present
+    // 1. Try sending via EmailJS REST API if credentials are present
+    if (process.env.EMAILJS_SERVICE_ID && process.env.EMAILJS_TEMPLATE_ID && process.env.EMAILJS_PUBLIC_KEY) {
+        try {
+            console.log(`[Email Service] Attempting to send OTP via EmailJS to: ${toEmail}`);
+            const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    service_id: process.env.EMAILJS_SERVICE_ID,
+                    template_id: process.env.EMAILJS_TEMPLATE_ID,
+                    user_id: process.env.EMAILJS_PUBLIC_KEY,
+                    accessToken: process.env.EMAILJS_PRIVATE_KEY,
+                    template_params: {
+                        to_email: toEmail,
+                        otp_code: otp
+                    }
+                })
+            });
+
+            if (!response.ok) {
+                const errText = await response.text();
+                throw new Error(`EmailJS responded with status ${response.status}: ${errText}`);
+            }
+
+            console.log(`[Email Service] EmailJS sent successfully.`);
+            return { success: true, messageId: 'emailjs', otp };
+        } catch (error) {
+            console.error("[Email Service] EmailJS delivery failed:", error);
+            console.log("[Email Service] Attempting fallback to other providers...");
+        }
+    }
+
+    // 2. Try sending via Resend HTTPS API if key is present
     if (resendInstance) {
         try {
             console.log(`[Email Service] Attempting to send OTP via Resend HTTPS to: ${toEmail}`);

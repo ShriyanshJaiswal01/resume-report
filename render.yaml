@@ -25,3 +25,11 @@ services:
         sync: false
       - key: RESEND_FROM_EMAIL
         sync: false           # Render will prompt the user to input this value
+      - key: EMAILJS_SERVICE_ID
+        sync: false
+      - key: EMAILJS_TEMPLATE_ID
+        sync: false
+      - key: EMAILJS_PUBLIC_KEY
+        sync: false
+      - key: EMAILJS_PRIVATE_KEY
+        sync: false
